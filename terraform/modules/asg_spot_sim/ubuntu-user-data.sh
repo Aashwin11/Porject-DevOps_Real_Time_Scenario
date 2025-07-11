@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 
 # Update package lists
 echo "Updating package lists..."
@@ -13,12 +13,19 @@ echo "Starting and enabling Apache2..."
 systemctl start apache2
 systemctl enable apache2
 
-# Fetch instance ID from the Instance Metadata Service (IMDSv1)
-echo "Fetching instance ID from metadata service..."
-INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
-
-# Define the web root for Apache on Ubuntu
+# Wait for Apache's web root to be created (just in case)
 WEB_ROOT="/var/www/html"
+for i in {1..10}; do
+    if [ -d "$WEB_ROOT" ]; then
+        break
+    fi
+    sleep 1
+done
+
+# Fetch instance ID from the Instance Metadata Service (IMDSv2)
+echo "Fetching instance ID from metadata service (IMDSv2)..."
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+INSTANCE_ID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
 
 # Create a custom index.html file with the instance ID
 echo "Creating custom index.html in $WEB_ROOT..."

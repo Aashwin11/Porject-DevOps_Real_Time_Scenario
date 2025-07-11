@@ -34,6 +34,8 @@ module "asg_spot_sim" {
   desired_capacity= var.desired_capacity
   subnet_ids      = module.vpc.public_subnet_ids
   target_group_arn= module.alb.target_group_arn
+  instance_sg_id  = module.security_groups.instance_sg_id  # <-- Pass the instance SG ID here
+
 }
 
 module "cloudwatch" {

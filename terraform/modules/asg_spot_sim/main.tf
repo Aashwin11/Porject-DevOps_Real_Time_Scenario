@@ -1,10 +1,12 @@
 resource "aws_launch_template" "spot_sim" {
-  name_prefix   = "${var.name_prefix}-spot-sim-"
+  name_prefix   = "${var.name_prefix}-spot-sim"
   image_id      = var.ami_id
   instance_type = var.instance_type
-
-  user_data = file("${path.module}/ubuntu-user-data.sh")
-  
+  vpc_security_group_ids = [var.instance_sg_id]
+    user_data = base64encode(file("/workspaces/Porject-DevOps_Real_Time_Scenario/terraform/modules/asg_spot_sim/ubuntu-user-data.sh"))
+    monitoring {
+    enabled = true
+  }
   tag_specifications {
     resource_type = "instance"
     tags = {
@@ -20,6 +22,13 @@ resource "aws_autoscaling_group" "spot_sim_asg" {
   min_size                  = var.min_size
   desired_capacity          = var.desired_capacity
   vpc_zone_identifier       = var.subnet_ids
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 90
+      instance_warmup        = 300
+    }
+  }
   launch_template {
     id      = aws_launch_template.spot_sim.id
     version = "$Latest"

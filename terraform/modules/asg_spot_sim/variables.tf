@@ -41,3 +41,8 @@ variable "target_group_arn" {
   description = "ALB Target Group ARN"
   type        = string
 }
+
+variable "instance_sg_id" {
+  description = "Security group ID for instances"
+  type        = string
+}

@@ -1,0 +1,39 @@
+# Terraform state and crash logs
+*.tfstate
+*.tfstate.*
+crash.log
+.terraform/
+.terraform.lock.hcl
+
+# Sensitive files
+*.tfvars
+*.tfvars.json
+terraform.tfvars
+
+# AWS credentials & config (never commit these)
+.aws/
+*.pem
+*.key
+
+# Python cache and virtualenv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+env/
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# AWS CLI downloaded files (like awscliv2.zip)
+awscliv2.zip
+awscli-bundle/
+awscli/

@@ -3,7 +3,8 @@ resource "aws_launch_template" "spot_sim" {
   image_id      = var.ami_id
   instance_type = var.instance_type
   vpc_security_group_ids = [var.instance_sg_id]
-    user_data = base64encode(file("/workspaces/Porject-DevOps_Real_Time_Scenario/terraform/modules/asg_spot_sim/ubuntu-user-data.sh"))
+    user_data = base64encode(file("${path.module}/ubuntu-user-data.sh"))
+
     monitoring {
     enabled = true
   }

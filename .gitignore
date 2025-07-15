@@ -8,7 +8,7 @@ crash.log
 # Sensitive files
 *.tfvars
 *.tfvars.json
-terraform.tfvars
+
 
 # AWS credentials & config (never commit these)
 .aws/

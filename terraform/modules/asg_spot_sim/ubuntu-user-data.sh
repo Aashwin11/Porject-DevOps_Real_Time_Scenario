@@ -20,7 +20,7 @@ rm -f $WEB_ROOT/index.html
 cat <<'EOF' > $WEB_ROOT/index.php
 <?php
 $start = microtime(true);
-while ((microtime(true) - $start) < 0.5) {
+while ((microtime(true) - $start) < 1.0) {
   hash('sha512', uniqid(rand(), true));
 }
 ?>

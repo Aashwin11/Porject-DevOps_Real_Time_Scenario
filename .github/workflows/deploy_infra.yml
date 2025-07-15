@@ -43,29 +43,29 @@ jobs:
           name: alb-dns
           path: ./terraform/alb_dns_name.txt
 
-  simulate:
-    needs: deploy
-    runs-on: ubuntu-latest
+  # simulate:
+  #   needs: deploy
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Wait for infra to settle
-        run: sleep 60
+  #   steps:
+  #     - name: Wait for infra to settle
+  #       run: sleep 60
 
-      - uses: actions/checkout@v3
+  #     - uses: actions/checkout@v3
 
-      - name: Download ALB DNS Name
-        uses: actions/download-artifact@v4
-        with:
-          name: alb-dns
-          path: .
+  #     - name: Download ALB DNS Name
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: alb-dns
+  #         path: .
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.x'
 
-      - name: Install dependencies
-        run: pip install requests
+  #     - name: Install dependencies
+  #       run: pip install requests
 
-      - name: Run traffic simulation
-        run: python traffic_simulation.py
+  #     - name: Run traffic simulation
+  #       run: python traffic_simulation.py

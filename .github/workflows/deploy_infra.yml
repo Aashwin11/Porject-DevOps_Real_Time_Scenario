@@ -40,10 +40,10 @@ jobs:
         working-directory: ./terraform
 
 
-      - name: Output ALB DNS Name
+      - name: Output ALB DNS Name (clean)
         run: |
-          set -o pipefail            # fail if any command fails
-          terraform output -raw alb_dns_name > alb_dns_name.txt
+          ALB_DNS=$(terraform output -raw alb_dns_name 2>/dev/null)
+          echo "$ALB_DNS" > alb_dns_name.txt
         working-directory: ./terraform
 
 
@@ -51,7 +51,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: alb-dns
-          path: terraform/alb_dns_name.txt
+          path: ./terraform/alb_dns_name.txt
 
 #Debug step
       - name: Debug ALB DNS Name content

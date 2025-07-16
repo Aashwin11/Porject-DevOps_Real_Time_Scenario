@@ -19,3 +19,13 @@ variable "cpu_threshold_low" {
   type        = number
   default     = 30
 }
+
+variable "scale_out_policy_arn" {
+  description = "Auto Scaling Group scale-out policy ARN"
+  type        = string
+}
+
+variable "scale_in_policy_arn" {
+  description = "Auto Scaling Group scale-in policy ARN"
+  type        = string
+}

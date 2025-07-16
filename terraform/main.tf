@@ -44,4 +44,6 @@ module "cloudwatch" {
   asg_name         = module.asg_spot_sim.asg_name
   cpu_threshold_high = var.cpu_threshold_high
   cpu_threshold_low  = var.cpu_threshold_low
+  scale_out_policy_arn = module.asg_spot_sim.scale_out_policy_arn
+  scale_in_policy_arn  = module.asg_spot_sim.scale_in_policy_arn
 }

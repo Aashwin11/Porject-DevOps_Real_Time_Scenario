@@ -43,6 +43,10 @@ jobs:
           name: alb-dns
           path: terraform/alb_dns_name.txt
 
+      - name: Debug ALB DNS Name content
+        run: cat ./terraform/alb_dns_name.txt
+
+
   simulate:
     needs: deploy
     runs-on: ubuntu-latest

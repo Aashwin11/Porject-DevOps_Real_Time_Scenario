@@ -60,7 +60,7 @@ resource "aws_autoscaling_policy" "scale_out" {
   autoscaling_group_name = aws_autoscaling_group.spot_sim_asg.name
   scaling_adjustment = 1
   adjustment_type        = "ChangeInCapacity"
-  cooldown               = 45
+  cooldown               = 30
 
 }
 
@@ -70,5 +70,5 @@ resource "aws_autoscaling_policy" "scale_in" {
   autoscaling_group_name = aws_autoscaling_group.spot_sim_asg.name
   scaling_adjustment     = -1
   adjustment_type        = "ChangeInCapacity"
-  cooldown               = 45
+  cooldown               = 30
 }

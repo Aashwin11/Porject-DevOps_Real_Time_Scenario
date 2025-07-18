@@ -80,7 +80,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: alb-dns
-          path: ./terraform
+          path: .
 
       - name: Set up Python
         uses: actions/setup-python@v4

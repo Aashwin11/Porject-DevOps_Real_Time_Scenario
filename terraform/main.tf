@@ -38,7 +38,7 @@ module "asg_spot_sim" {
 
 }
 
-module "cloudwatch" {
+module "cloudwatch"{
   source           = "./modules/cloudwatch"
   name_prefix      = var.name_prefix
   asg_name         = module.asg_spot_sim.asg_name
@@ -46,6 +46,7 @@ module "cloudwatch" {
   cpu_threshold_low  = var.cpu_threshold_low
   scale_out_policy_arn = module.asg_spot_sim.scale_out_policy_arn
   scale_in_policy_arn  = module.asg_spot_sim.scale_in_policy_arn
+  alarm_topic_arn = module.lambda_incident_response.alarm_topic_arn
 }
 
 module "lambda_incident_response" {

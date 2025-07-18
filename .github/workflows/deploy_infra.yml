@@ -3,99 +3,96 @@ name: Deploy and Simulate Traffic
 on:
   workflow_dispatch:
 
-  jobs:
-    deploy:
-        runs-on: ubuntu-latest
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
-            steps:
-                  - name: Checkout code
-                          uses: actions/checkout@v3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-                                - name: Configure AWS Credentials
-                                        uses: aws-actions/configure-aws-credentials@v2
-                                                with:
-                                                          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                                                                    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                                                                              aws-region: us-east-1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-                                                                                    - name: Setup Terraform
-                                                                                            uses: hashicorp/setup-terraform@v2
-                                                                                                    with:
-                                                                                                              terraform_wrapper: false
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
 
-                                                                                                                    - name: Terraform Init
-                                                                                                                            run: terraform init
-                                                                                                                                    working-directory: ./terraform
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform
 
-                                                                                                                                          - name: Terraform Plan
-                                                                                                                                                  run: terraform plan
-                                                                                                                                                          working-directory: ./terraform
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: ./terraform
 
-                                                                                                                                                                - name: Terraform Apply
-                                                                                                                                                                        run: terraform apply -auto-approve
-                                                                                                                                                                                working-directory: ./terraform
-                                                                                                                                                                                #Debug step
-                                                                                                                                                                                      - name: Debug Terraform Version and Path
-                                                                                                                                                                                              run: |
-                                                                                                                                                                                                        which terraform
-                                                                                                                                                                                                                  terraform version
-                                                                                                                                                                                                                          working-directory: ./terraform
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./terraform
 
+      # Debug step
+      - name: Debug Terraform Version and Path
+        run: |
+          which terraform
+          terraform version
+        working-directory: ./terraform
 
-                                                                                                                                                                                                                                - name: Output ALB DNS Name (clean)
-                                                                                                                                                                                                                                        run: |
-                                                                                                                                                                                                                                                  ALB_DNS=$(terraform output -raw alb_dns_name 2>/dev/null)
-                                                                                                                                                                                                                                                            echo "$ALB_DNS" > alb_dns_name.txt
-                                                                                                                                                                                                                                                                    working-directory: ./terraform
+      - name: Output ALB DNS Name (clean)
+        run: |
+          ALB_DNS=$(terraform output -raw alb_dns_name 2>/dev/null)
+          echo "$ALB_DNS" > alb_dns_name.txt
+        working-directory: ./terraform
 
+      - name: Upload ALB DNS Name Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: alb-dns
+          path: ./terraform/alb_dns_name.txt
 
-                                                                                                                                                                                                                                                                          - name: Upload ALB DNS Name Artifact
-                                                                                                                                                                                                                                                                                  uses: actions/upload-artifact@v4
-                                                                                                                                                                                                                                                                                          with:
-                                                                                                                                                                                                                                                                                                    name: alb-dns
-                                                                                                                                                                                                                                                                                                              path: ./terraform/alb_dns_name.txt
+      # Debug step
+      - name: Debug ALB DNS Name content
+        run: cat ./terraform/alb_dns_name.txt
+        working-directory: ./terraform
 
-                                                                                                                                                                                                                                                                                                              #Debug step
-                                                                                                                                                                                                                                                                                                                    - name: Debug ALB DNS Name content
-                                                                                                                                                                                                                                                                                                                            run: cat ./terraform/alb_dns_name.txt
+      # Debug step
+      - name: Verify ALB DNS Name
+        run: |
+          echo "ALB DNS Name:"
+          cat ./alb_dns_name.txt
+          if [ ! -s ./alb_dns_name.txt ]; then
+            echo "ERROR: alb_dns_name.txt is empty"
+            exit 1
+          fi
+        working-directory: ./terraform
 
-                                                                                                                                                                                                                                                                                                                            #Debug step
-                                                                                                                                                                                                                                                                                                                                  - name: Verify ALB DNS Name
-                                                                                                                                                                                                                                                                                                                                          run: |
-                                                                                                                                                                                                                                                                                                                                                    echo "ALB DNS Name:"
-                                                                                                                                                                                                                                                                                                                                                              cat ./alb_dns_name.txt
-                                                                                                                                                                                                                                                                                                                                                                        if [ ! -s ./alb_dns_name.txt ]; then
-                                                                                                                                                                                                                                                                                                                                                                                    echo "ERROR: alb_dns_name.txt is empty"
-                                                                                                                                                                                                                                                                                                                                                                                                exit 1
-                                                                                                                                                                                                                                                                                                                                                                                                          fi
-                                                                                                                                                                                                                                                                                                                                                                                                                  working-directory: ./terraform
+  simulate:
+    needs: deploy
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Wait for infra to settle
+        run: sleep 60
 
+      - uses: actions/checkout@v3
 
-                                                                                                                                                                                                                                                                                                                                                                                                                    simulate:
-                                                                                                                                                                                                                                                                                                                                                                                                                        needs: deploy
-                                                                                                                                                                                                                                                                                                                                                                                                                            runs-on: ubuntu-latest
+      - name: Download ALB DNS Name
+        uses: actions/download-artifact@v4
+        with:
+          name: alb-dns
+          path: ./terraform
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                steps:
-                                                                                                                                                                                                                                                                                                                                                                                                                                      - name: Wait for infra to settle
-                                                                                                                                                                                                                                                                                                                                                                                                                                              run: sleep 60
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: pip install requests
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                          - name: Download ALB DNS Name
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                  uses: actions/download-artifact@v4
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                          with:
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    name: alb-dns
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              path: ./terraform
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    - name: Set up Python
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            uses: actions/setup-python@v4
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    with:
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              python-version: '3.x'
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    - name: Install dependencies
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            run: pip install requests
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  - name: Run traffic simulation
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          run: python traffic_simulation.py
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+      - name: Run traffic simulation
+        run: python traffic_simulation.py

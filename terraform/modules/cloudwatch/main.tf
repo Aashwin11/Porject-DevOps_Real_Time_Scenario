@@ -8,7 +8,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   statistic           = "Average"
   threshold           = var.cpu_threshold_high
   alarm_description   = "Alarm when CPU exceeds threshold"
-  alarm_actions       = [aws_sns_topic.cpu_alerts.arn,var.scale_out_policy_arn]
+  alarm_actions       = [aws_sns_topic.cpu_alerts.arn,var.scale_out_policy_arn,var.alarm_topic_arn]
   dimensions = {
     AutoScalingGroupName = var.asg_name
   }
@@ -24,7 +24,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low" {
   statistic           = "Average"
   threshold           = var.cpu_threshold_low
   alarm_description   = "Alarm when CPU goes below threshold"
-  alarm_actions       = [aws_sns_topic.cpu_alerts.arn,var.scale_in_policy_arn]
+  alarm_actions       = [aws_sns_topic.cpu_alerts.arn,var.scale_out_policy_arn,var.alarm_topic_arn]
   dimensions = {
     AutoScalingGroupName = var.asg_name
   }

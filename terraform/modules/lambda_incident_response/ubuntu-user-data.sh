@@ -31,8 +31,8 @@ while ((microtime(true) - $start) < 1.0) {
     <meta charset="UTF-8">
 </head>
 <body>
-    <h1>Welcome to Your ACTING SPOT INSTANCES!</h1>
-    <p>ASI Instance ID: <strong><?php echo gethostname(); ?></strong></p>
+    <h1>Welcome to Your HELPER INSTANCES </h1>
+    <p>HELPER Instance ID: <strong><?php echo gethostname(); ?></strong></p>
     <p>If you see this, PHP and CPU burn are working!</p>
 </body>
 </html>

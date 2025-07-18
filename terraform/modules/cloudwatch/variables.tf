@@ -29,3 +29,7 @@ variable "scale_in_policy_arn" {
   description = "Auto Scaling Group scale-in policy ARN"
   type        = string
 }
+
+variable "alarm_topic_arn" {
+    type=string
+}

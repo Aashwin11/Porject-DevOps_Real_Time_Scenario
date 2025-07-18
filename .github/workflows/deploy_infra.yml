@@ -35,12 +35,6 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: ./terraform
 
-      # Debug step
-      - name: Debug Terraform Version and Path
-        run: |
-          which terraform
-          terraform version
-        working-directory: ./terraform
 
       - name: Output ALB DNS Name (clean)
         run: |
@@ -54,21 +48,6 @@ jobs:
           name: alb-dns
           path: ./terraform/alb_dns_name.txt
 
-      # Debug step
-      - name: Debug ALB DNS Name content
-        run: cat ./terraform/alb_dns_name.txt
-        working-directory: ./terraform
-
-      # Debug step
-      - name: Verify ALB DNS Name
-        run: |
-          echo "ALB DNS Name:"
-          cat ./alb_dns_name.txt
-          if [ ! -s ./alb_dns_name.txt ]; then
-            echo "ERROR: alb_dns_name.txt is empty"
-            exit 1
-          fi
-        working-directory: ./terraform
 
   simulate:
     needs: deploy

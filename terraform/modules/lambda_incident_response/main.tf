@@ -59,7 +59,8 @@ resource "aws_lambda_function" "incident_handler" {
   handler       = "incident_handler.handler"
   runtime       = "python3.12"
   role          = aws_iam_role.lambda_role.arn
-
+  timeout          = 300  # Increase timeout to 5 minutes (300 seconds)
+  memory_size      = 256  # Optional: Increase memory for better performance
   environment {
     variables = {
       AMI_ID           = var.ami_id

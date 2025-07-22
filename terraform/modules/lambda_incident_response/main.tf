@@ -24,7 +24,11 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
       "ec2:DescribeSecurityGroups",
       "elasticloadbalancing:RegisterTargets",
       "elasticloadbalancing:DeregisterTargets",
-      "elasticloadbalancing:DescribeTargetGroups"
+      "elasticloadbalancing:DescribeTargetGroups",
+      "autoscaling:DescribeAutoScalingGroups",
+      "autoscaling:SetDesiredCapacity",
+      "cloudwatch:DescribeAlarms",
+      "cloudwatch:PutMetricAlarm"
     ]
     resources = ["*"]
   }

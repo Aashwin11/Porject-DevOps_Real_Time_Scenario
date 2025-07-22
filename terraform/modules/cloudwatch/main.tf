@@ -4,7 +4,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   evaluation_periods  = 1
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
-  period              = 20
+  period              = 60
   statistic           = "Average"
   threshold           = var.cpu_threshold_high
   alarm_description   = "Alarm when CPU exceeds threshold"
@@ -20,11 +20,11 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low" {
   evaluation_periods  = 1
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
-  period              = 10
+  period              = 60
   statistic           = "Average"
   threshold           = var.cpu_threshold_low
   alarm_description   = "Alarm when CPU goes below threshold"
-  alarm_actions       = [aws_sns_topic.cpu_alerts.arn,var.scale_out_policy_arn,var.alarm_topic_arn]
+  alarm_actions       = [aws_sns_topic.cpu_alerts.arn,var.scale_in_policy_arn,var.alarm_topic_arn]
   dimensions = {
     AutoScalingGroupName = var.asg_name
   }

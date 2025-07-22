@@ -5,9 +5,9 @@ import os
 from statistics import mean
 
 ALB_DNS_FILE = os.getenv('ALB_DNS_FILE', 'alb_dns_name.txt')
-RAMP_UP_SECONDS = 90
-PEAK_SECONDS = 300
-RAMP_DOWN_SECONDS = 60
+RAMP_UP_SECONDS = 180
+PEAK_SECONDS = 600
+RAMP_DOWN_SECONDS = 90
 PEAK_RPS = 20
 
 def get_alb_dns():

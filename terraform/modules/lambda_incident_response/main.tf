@@ -12,7 +12,6 @@ resource "aws_iam_role" "lambda_role" {
   name               = "incident-handler-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
-
 data "aws_iam_policy_document" "lambda_policy_doc" {
   statement {
     actions = [
@@ -31,7 +30,11 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
       "events:PutTargets",
       "events:DeleteRule",
       "events:RemoveTargets",
-      "lambda:InvokeFunction"
+      "events:ListTargetsByRule",
+      "events:DescribeRule",
+      "lambda:InvokeFunction",
+      "lambda:GetFunction",
+      "lambda:AddPermission"
     ]
     resources = ["*"]
   }
@@ -56,14 +59,24 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_attach" {
   policy_arn = aws_iam_policy.lambda_policy.arn
 }
 
+resource "aws_cloudwatch_log_group" "lambda_logs" {
+  name              = "/aws/lambda/incident-handler"
+  retention_in_days = 14
+}
+
+
 resource "aws_lambda_function" "incident_handler" {
   function_name = "incident-handler"
   filename      = "${path.module}/lambda_code/incident_handler.zip"
   handler       = "incident_handler.handler"
   runtime       = "python3.12"
   role          = aws_iam_role.lambda_role.arn
-  timeout          = 300  # Increase timeout to 5 minutes (300 seconds)
-  memory_size      = 256  # Optional: Increase memory for better performance
+  timeout       = 300
+  memory_size   = 256
+  
+  # Add explicit dependency on log group
+  depends_on = [aws_cloudwatch_log_group.lambda_logs]
+
   environment {
     variables = {
       AMI_ID           = var.ami_id

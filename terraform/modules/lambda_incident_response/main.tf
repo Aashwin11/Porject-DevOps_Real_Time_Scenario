@@ -25,10 +25,13 @@ data "aws_iam_policy_document" "lambda_policy_doc" {
       "elasticloadbalancing:RegisterTargets",
       "elasticloadbalancing:DeregisterTargets",
       "elasticloadbalancing:DescribeTargetGroups",
-      "autoscaling:DescribeAutoScalingGroups",
-      "autoscaling:SetDesiredCapacity",
+      "cloudwatch:GetMetricStatistics",
       "cloudwatch:DescribeAlarms",
-      "cloudwatch:PutMetricAlarm"
+      "events:PutRule",
+      "events:PutTargets",
+      "events:DeleteRule",
+      "events:RemoveTargets",
+      "lambda:InvokeFunction"
     ]
     resources = ["*"]
   }
@@ -68,6 +71,7 @@ resource "aws_lambda_function" "incident_handler" {
       SUBNET_IDS       = join(",", var.subnet_ids)
       TARGET_GROUP_ARN = var.target_group_arn
       USER_DATA        = filebase64("${path.module}/lambda_code/user_data.sh")
+      ASG_NAME         = var.asg_name
     }
   }
 }

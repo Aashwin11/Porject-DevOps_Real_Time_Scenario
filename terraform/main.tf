@@ -54,5 +54,7 @@ module "lambda_incident_response" {
   ami_id           = var.ami_id        
   sg_id            = module.security_groups.instance_sg_id    
   subnet_ids       = module.vpc.public_subnet_ids           
-  target_group_arn = module.alb.target_group_arn    
+  target_group_arn = module.alb.target_group_arn   
+  asg_name         = module.asg_spot_sim.asg_name  # Add this line
+ 
 }
